@@ -193,8 +193,8 @@
 
         .admin-product-row { display: flex; gap: 16px; background: var(--bg-hover); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 16px; align-items: flex-start; }
         .admin-product-img { width: 64px; height: 64px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
-        .admin-product-info { flex: 1; }
-        .admin-product-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .admin-product-info { flex: 1; position: relative; }
+        .admin-product-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; padding-right: 90px; }
         .admin-product-details { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
 
         /* ==========================================================================
@@ -329,7 +329,7 @@
                 </div>
                 <div class="faq-item glass-panel">
                     <div class="faq-question">Какие гарантии вы даете на аккаунты? <span>+</span></div>
-                    <div class="faq-answer">Мы продаем только проверенные чистые аккаунты с отлежкой. На каждый товар распространяется гарантия на момент первой авторизации. Если возникнут вопросы, вы всегда можете написать менеджеру поддержки @delentius_support.</div>
+                    <div class="faq-answer">Мы продаем только проверенные чистые аккаунты с отлежкой. На каждый товар распространяется гарантия на момент первой авторизации. Если возникнут вопросы, вы всегда можете написать менеджеру поддержки @delentius_dev_manager.</div>
                 </div>
                 <div class="faq-item glass-panel">
                     <div class="faq-question">Какие способы оплаты поддерживаются? <span>+</span></div>
@@ -343,7 +343,7 @@
     <footer>
         <div class="container" style="display:flex; justify-content:space-between; align-items:center;">
             <div>&copy; 2026 NexusAcc. Все права защищены.</div>
-            <div class="text-muted">Поддержка: @delentius_support</div>
+            <div class="text-muted">Поддержка: @delentius_dev_manager</div>
         </div>
     </footer>
 
@@ -725,6 +725,7 @@
                     row.innerHTML = `
                         <img src="${product.image}" alt="${product.title}" class="admin-product-img">
                         <div class="admin-product-info">
+                            <button type="button" class="btn btn-danger" onclick="StoreApp.deleteProduct('${product.id}')" style="position: absolute; top: 0; right: 0; padding: 6px 12px; font-size: 11px;">Удалить товар</button>
                             <div class="admin-product-title">${product.title}</div>
                             <div class="admin-product-details">Цена: ${product.price} ₽ | В базе: <span style="color:var(--success); font-weight:bold;">${accsCount} шт.</span></div>
                             <div style="margin-top: 10px;">
