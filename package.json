@@ -3,5 +3,8 @@
     "axios": "^1.18.1",
     "node-telegram-bot-api": "^1.2.0",
     "telegraf": "^4.16.3"
+  },
+  "scripts": {
+    "start": "node bot.js"
   }
 }
