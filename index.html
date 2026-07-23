@@ -26,6 +26,7 @@
             --border-light: #2a2a3f;
             --radius-sm: 8px;
             --radius-md: 16px;
+            --radius-lg: 24px;
             --font-sans: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -85,7 +86,7 @@
         .logo { font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
         .logo svg { width: 32px; height: 32px; color: var(--primary); filter: drop-shadow(0 0 10px var(--primary)); }
         .nav-links { display: flex; gap: 32px; }
-        .nav-links a { font-size: 14px; font-weight: 600; color: var(--text-muted); transition: var(--transition); }
+        .nav-links a { font-size: 14px; font-weight: 600; color: var(--text-muted); transition: var(--transition); position: relative; }
         .nav-links a:hover, .nav-links a.active { color: var(--text-main); }
         .header-actions { display: flex; align-items: center; gap: 16px; }
         
@@ -104,7 +105,7 @@
         .hero p { font-size: clamp(15px, 2vw, 18px); color: var(--text-muted); margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto; }
 
         /* ==========================================================================
-           5. CATALOG & CARDS (NO IMAGES)
+           5. CATALOG & CARDS (С ГЕНЕРИРУЕМЫМ ФОНОМ)
            ========================================================================== */
         .catalog-section { padding: 80px 0; background: var(--bg-surface); position: relative; z-index: 2; }
         .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; }
@@ -118,13 +119,16 @@
 
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
         
-        .product-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; transition: var(--transition); display: flex; flex-direction: column; }
+        .product-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; transition: var(--transition); display: flex; flex-direction: column; position: relative; }
         .product-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px var(--primary-dim); }
         
-        .card-content { padding: 30px 24px 24px; flex: 1; display: flex; flex-direction: column; position: relative; }
-        .card-badges { position: absolute; top: 16px; right: 16px; }
-        
-        .card-title { font-size: 18px; margin-bottom: 8px; color: #fff; line-height: 1.4; padding-right: 80px; }
+        .card-image { height: 180px; position: relative; background: #0A1930; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .card-image img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transition: transform 0.5s ease; }
+        .product-card:hover .card-image img { transform: scale(1.05); opacity: 1; }
+        .card-badges { position: absolute; top: 12px; left: 12px; display: flex; gap: 8px; z-index: 2; }
+
+        .card-content { padding: 24px; flex: 1; display: flex; flex-direction: column; position: relative; }
+        .card-title { font-size: 18px; margin-bottom: 8px; color: #fff; line-height: 1.4; }
         .card-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; flex: 1; }
         
         .card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 20px; border-top: 1px solid var(--border); }
@@ -149,7 +153,7 @@
         .faq-item.active .faq-answer { display: block; }
 
         /* ==========================================================================
-           7. CART DRAWER (NO IMAGES)
+           7. CART DRAWER
            ========================================================================== */
         .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 999; opacity: 0; visibility: hidden; transition: var(--transition); }
         .drawer-overlay.active { opacity: 1; visibility: visible; }
@@ -162,10 +166,11 @@
         .drawer-items { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
         .empty-cart { text-align: center; color: var(--text-muted); margin-top: 50px; display: none; }
         
-        .cart-item { display: flex; gap: 16px; background: var(--bg-hover); padding: 20px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); position: relative; }
+        .cart-item { display: flex; gap: 16px; background: var(--bg-hover); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); position: relative; align-items: center; }
+        .cart-item-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: #0A1930; }
         .cart-item-info { flex: 1; padding-right: 30px; }
-        .cart-item-title { font-size: 15px; font-weight: 600; margin-bottom: 8px; line-height: 1.3; }
-        .cart-item-price { font-size: 18px; font-weight: 800; color: var(--primary); font-family: var(--font-mono); margin-top: 6px; }
+        .cart-item-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; line-height: 1.3; }
+        .cart-item-price { font-size: 16px; font-weight: 800; color: var(--primary); font-family: var(--font-mono); margin-top: 4px; }
         .remove-item { position: absolute; top: 16px; right: 16px; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
         .remove-item:hover { color: var(--accent); }
         
@@ -185,9 +190,11 @@
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
 
-        .admin-product-row { background: var(--bg-hover); padding: 20px; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 16px; position: relative; }
-        .admin-product-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 6px; padding-right: 100px; }
-        .admin-product-details { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+        .admin-product-row { display: flex; gap: 16px; background: var(--bg-hover); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 16px; align-items: flex-start; }
+        .admin-product-img { width: 64px; height: 64px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: #0A1930; }
+        .admin-product-info { flex: 1; position: relative; }
+        .admin-product-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; padding-right: 90px; }
+        .admin-product-details { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
 
         /* ==========================================================================
            9. TOAST NOTIFICATIONS
@@ -288,7 +295,7 @@
                 <div class="step-card glass-panel">
                     <div class="step-num">01</div>
                     <h3 class="step-title">Выбор товара</h3>
-                    <p class="step-desc">Изучи каталог, выбери нужную сборку (Blox Fruits, Adopt Me) и добавь её в корзину.</p>
+                    <p class="step-desc">Изучи каталог, выбери нужную сборку (Blox Fruits, Adopt Me, MM2 и т.д.) и добавь её в корзину.</p>
                 </div>
                 <div class="step-card glass-panel">
                     <div class="step-num">02</div>
@@ -313,7 +320,7 @@
             <div class="faq-container">
                 <div class="faq-item glass-panel">
                     <div class="faq-question">Как происходит выдача купленного аккаунта? <span>+</span></div>
-                    <div class="faq-answer">Сразу после оплаты система мгновенно выдает данные в формате <code>login:pass</code>.</div>
+                    <div class="faq-answer">Сразу после оплаты система мгновенно выдает данные в формате <code>login:pass</code>. Ожидание оператора не требуется, автовыдача работает 24/7.</div>
                 </div>
                 <div class="faq-item glass-panel">
                     <div class="faq-question">Какие гарантии вы даете? <span>+</span></div>
@@ -380,15 +387,21 @@
             <form id="addProductForm" style="margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 25px;">
                 <h4 style="color: var(--primary); margin-bottom: 15px; font-size: 16px;">1. Создать новый товар</h4>
                 <div class="form-group">
-                    <label>Название товара</label>
-                    <input type="text" id="prodTitle" class="input-field" required placeholder="Например: Blox Fruits Max Level">
+                    <label>Название товара (Обложка сгенерируется автоматически по словам в названии)</label>
+                    <input type="text" id="prodTitle" class="input-field" required placeholder="Например: Войс аккаунт 16+ / Blox Fruits / Отлежка 2015">
                 </div>
                 <div class="form-group">
                     <label>Категория</label>
                     <select id="prodCategory" class="input-field">
+                        <option value="Voice Accounts">Voice Accounts</option>
                         <option value="Blox Fruits">Blox Fruits</option>
                         <option value="Adopt Me">Adopt Me</option>
-                        <option value="Old Accounts">Old Accounts</option>
+                        <option value="Murder Mystery 2">Murder Mystery 2</option>
+                        <option value="Pet Simulator">Pet Simulator</option>
+                        <option value="Tower Defense">Tower Defense</option>
+                        <option value="Da Hood">Da Hood</option>
+                        <option value="Old Accounts">Old Accounts (Отлежка)</option>
+                        <option value="New Accounts">New Accounts (Автореги)</option>
                         <option value="Robux Balance">Robux Balance</option>
                         <option value="Other">Другое</option>
                     </select>
@@ -445,6 +458,45 @@
                 this.cacheDOM();
                 this.bindEvents();
                 this.init();
+            }
+
+            // ==========================================
+            // ФУНКЦИЯ УМНОГО ПОДБОРА ФОНА
+            // Генерирует темно-голубой фон (0A1930) с красивым неоновым текстом (00F0FF)
+            // ==========================================
+            autoAssignImage(title, category) {
+                const t = title.toLowerCase();
+                const c = category.toLowerCase();
+
+                const backgrounds = {
+                    voice: "https://placehold.co/600x400/0A1930/00F0FF/png?text=VOICE+ACCOUNTS",
+                    blox: "https://placehold.co/600x400/0A1930/00F0FF/png?text=BLOX+FRUITS",
+                    adopt: "https://placehold.co/600x400/0A1930/00F0FF/png?text=ADOPT+ME",
+                    mm2: "https://placehold.co/600x400/0A1930/00F0FF/png?text=MM2",
+                    petsim: "https://placehold.co/600x400/0A1930/00F0FF/png?text=PET+SIMULATOR",
+                    tds: "https://placehold.co/600x400/0A1930/00F0FF/png?text=TOWER+DEFENSE",
+                    brookhaven: "https://placehold.co/600x400/0A1930/00F0FF/png?text=BROOKHAVEN",
+                    dahood: "https://placehold.co/600x400/0A1930/00F0FF/png?text=DA+HOOD",
+                    robux: "https://placehold.co/600x400/0A1930/00F0FF/png?text=ROBUX",
+                    old: "https://placehold.co/600x400/0A1930/00F0FF/png?text=OLD+ACCOUNTS",
+                    newAcc: "https://placehold.co/600x400/0A1930/00F0FF/png?text=NEW+ACCOUNTS",
+                    default: "https://placehold.co/600x400/0A1930/0A1930/png?text=%20" // Пустой красивый темно-голубой градиент-фон
+                };
+
+                // Логика проверки ключевых слов (анализирует все популярные режимы и виды аккаунтов)
+                if (t.includes('войс') || t.includes('voice') || t.includes('микрофон') || c.includes('voice')) return backgrounds.voice;
+                if (t.includes('blox') || t.includes('блокс') || t.includes('фрукты') || t.includes('фрутс') || c.includes('blox')) return backgrounds.blox;
+                if (t.includes('adopt') || t.includes('адопт') || t.includes('петы') || c.includes('adopt')) return backgrounds.adopt;
+                if (t.includes('mm2') || t.includes('murder') || t.includes('мардер') || t.includes('мм2') || c.includes('murder')) return backgrounds.mm2;
+                if (t.includes('pet sim') || t.includes('пет сим') || t.includes('psx') || t.includes('ps99') || c.includes('pet sim')) return backgrounds.petsim;
+                if (t.includes('tds') || t.includes('tower defense') || t.includes('тавер') || c.includes('tower defense')) return backgrounds.tds;
+                if (t.includes('brookhaven') || t.includes('брукхейвен') || c.includes('brookhaven')) return backgrounds.brookhaven;
+                if (t.includes('da hood') || t.includes('да худ') || c.includes('da hood')) return backgrounds.dahood;
+                if (t.includes('robux') || t.includes('робукс') || t.includes('rbx') || t.includes('баланс') || c.includes('robux')) return backgrounds.robux;
+                if (t.includes('old') || t.includes('стар') || t.includes('отлежк') || t.includes('201') || c.includes('old')) return backgrounds.old;
+                if (t.includes('new') || t.includes('нов') || t.includes('пустышк') || t.includes('авторег') || c.includes('new')) return backgrounds.newAcc;
+                
+                return backgrounds.default; // Если ничего не совпало - просто синий фон без надписей
             }
 
             cacheDOM() {
@@ -605,9 +657,15 @@
                         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
                     } catch(e) {}
                 }
-                // Стартовый товар БЕЗ картинки
                 return [
-                    { id: 'def_1', title: 'Blox Fruits Max Level + CDK', category: 'Blox Fruits', price: 1490, accounts: ["user1:pass123", "user2:pass456"] }
+                    { 
+                        id: 'def_1', 
+                        title: 'Blox Fruits Max Level + CDK', 
+                        category: 'Blox Fruits', 
+                        price: 1490, 
+                        image: this.autoAssignImage('Blox Fruits Max Level + CDK', 'Blox Fruits'),
+                        accounts: ["user1:pass123", "user2:pass456"] 
+                    }
                 ];
             }
 
@@ -625,6 +683,7 @@
                     title,
                     category,
                     price,
+                    image: this.autoAssignImage(title, category),
                     accounts: []
                 };
 
@@ -680,12 +739,15 @@
                     const row = document.createElement('div');
                     row.className = 'admin-product-row';
                     row.innerHTML = `
-                        <button type="button" class="btn btn-danger" onclick="StoreApp.deleteProduct('${product.id}')" style="position: absolute; top: 20px; right: 20px; padding: 6px 12px; font-size: 11px;">Удалить</button>
-                        <div class="admin-product-title">${product.title}</div>
-                        <div class="admin-product-details">Цена: ${product.price} ₽ | В базе: <span style="color:var(--success); font-weight:bold;">${accsCount} шт.</span></div>
-                        <div style="margin-top: 10px;">
-                            <textarea id="acc_input_${product.id}" class="input-field" placeholder="Вставить логин:пароль (с новой строки)..." style="font-size:12px; min-height:60px; margin-bottom:8px;"></textarea>
-                            <button type="button" class="btn btn-secondary" onclick="StoreApp.handleAddAccountsToProduct('${product.id}')" style="padding: 8px 16px; font-size: 12px; border-color: var(--success); color: var(--success);">Загрузить базу</button>
+                        <img src="${product.image}" alt="${product.title}" class="admin-product-img" onerror="this.onerror=null; this.src='https://placehold.co/600x400/0A1930/0A1930/png?text=%20';">
+                        <div class="admin-product-info">
+                            <button type="button" class="btn btn-danger" onclick="StoreApp.deleteProduct('${product.id}')" style="position: absolute; top: 0; right: 0; padding: 6px 12px; font-size: 11px;">Удалить</button>
+                            <div class="admin-product-title">${product.title}</div>
+                            <div class="admin-product-details">Цена: ${product.price} ₽ | В базе: <span style="color:var(--success); font-weight:bold;">${accsCount} шт.</span></div>
+                            <div style="margin-top: 10px;">
+                                <textarea id="acc_input_${product.id}" class="input-field" placeholder="Вставить логин:пароль (с новой строки)..." style="font-size:12px; min-height:60px; margin-bottom:8px;"></textarea>
+                                <button type="button" class="btn btn-secondary" onclick="StoreApp.handleAddAccountsToProduct('${product.id}')" style="padding: 8px 16px; font-size: 12px; border-color: var(--success); color: var(--success);">Загрузить базу</button>
+                            </div>
                         </div>
                     `;
                     this.adminProductsListContainer.appendChild(row);
@@ -753,10 +815,13 @@
                     const card = document.createElement('div');
                     card.className = 'product-card glass-panel';
                     card.innerHTML = `
-                        <div class="card-content">
+                        <div class="card-image">
+                            <img src="${product.image}" loading="lazy" alt="${product.title}" onerror="this.onerror=null; this.src='https://placehold.co/600x400/0A1930/0A1930/png?text=%20';">
                             <div class="card-badges">
                                 <span class="badge badge-stock">${stock} шт.</span>
                             </div>
+                        </div>
+                        <div class="card-content">
                             <h3 class="card-title">${product.title}</h3>
                             <div class="card-desc">Login:Pass • Гарантия автовыдачи</div>
                             <div class="card-footer">
@@ -852,6 +917,7 @@
                     const el = document.createElement('div');
                     el.className = 'cart-item';
                     el.innerHTML = `
+                        <img src="${item.image}" alt="${item.title}" class="cart-item-img" onerror="this.onerror=null; this.src='https://placehold.co/600x400/0A1930/0A1930/png?text=%20';">
                         <div class="cart-item-info">
                             <div class="cart-item-title">${item.title}</div>
                             <div class="text-muted" style="font-size: 12px; margin-bottom: 2px;">${item.quantity} шт. x ${currentPrice} ₽</div>
