@@ -410,10 +410,7 @@
                     <label>Цена (в рублях ₽)</label>
                     <input type="number" id="prodPrice" class="input-field" required placeholder="1490">
                 </div>
-                <div class="form-group">
-                    <label>Ссылка на картинку (URL)</label>
-                    <input type="url" id="prodImage" class="input-field" required placeholder="https://images.unsplash.com/photo-...">
-                </div>
+                <!-- ПОЛЕ ДЛЯ КАРТИНКИ ПОЛНОСТЬЮ УДАЛЕНО ОТСЮДА -->
                 <button type="submit" class="btn btn-primary" style="width:100%;">Опубликовать карточку</button>
             </form>
 
@@ -660,14 +657,14 @@
                 const title = document.getElementById('prodTitle').value;
                 const category = document.getElementById('prodCategory').value;
                 const price = parseFloat(document.getElementById('prodPrice').value);
-                const image = document.getElementById('prodImage').value;
                 
+                // ТУТ ЖЕСТКО ЗАДАЕМ КАРТИНКУ ПО УМОЛЧАНИЮ
                 const newProduct = {
                     id: 'prod_' + Date.now() + Math.random().toString(36).substring(2, 7),
                     title,
                     category,
                     price,
-                    image,
+                    image: 'https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=600&q=80',
                     accounts: []
                 };
 
