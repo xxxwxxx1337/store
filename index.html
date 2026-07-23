@@ -723,7 +723,7 @@
                     const row = document.createElement('div');
                     row.className = 'admin-product-row';
                     row.innerHTML = `
-                        <img src="${product.image}" alt="${product.title}" class="admin-product-img">
+                        <img src="${product.image}" alt="${product.title}" class="admin-product-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=600&q=80';">
                         <div class="admin-product-info">
                             <button type="button" class="btn btn-danger" onclick="StoreApp.deleteProduct('${product.id}')" style="position: absolute; top: 0; right: 0; padding: 6px 12px; font-size: 11px;">Удалить товар</button>
                             <div class="admin-product-title">${product.title}</div>
@@ -802,7 +802,7 @@
                     card.className = 'product-card glass-panel';
                     card.innerHTML = `
                         <div class="card-image">
-                            <img src="${product.image}" loading="lazy" alt="${product.title}">
+                            <img src="${product.image}" loading="lazy" alt="${product.title}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=600&q=80';">
                             <div class="card-badges">
                                 <span class="badge badge-stock">${stock} шт. в наличии</span>
                             </div>
@@ -903,7 +903,7 @@
                     const el = document.createElement('div');
                     el.className = 'cart-item';
                     el.innerHTML = `
-                        <img src="${item.image}" alt="${item.title}" class="cart-item-img">
+                        <img src="${item.image}" alt="${item.title}" class="cart-item-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=600&q=80';">
                         <div class="cart-item-info">
                             <div class="cart-item-title">${item.title}</div>
                             <div class="text-muted" style="font-size: 12px; margin-bottom: 2px;">${item.quantity} шт. x ${currentPrice} ₽</div>
