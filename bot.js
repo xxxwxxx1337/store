@@ -1,4 +1,5 @@
-const { Telegraf } = require('telegraf');
+const { Telegraf, Markup } = require('telegraf');
+const axios = require('axios');
 
 // ==================== НАСТРОЙКИ ====================
 const TELEGRAM_TOKEN = '8689398860:AAHkGRmobkHlLc0xd4k0t2v3rIxDNdZRcCg';
@@ -13,46 +14,137 @@ let accountsDB = [
 
 const bot = new Telegraf(TELEGRAM_TOKEN);
 
-bot.start((ctx) => {
-  const startPayload = ctx.text.split(' ')[1]; // Ловим параметр покупки с сайта (например, buy_15_40)
+// Функция создания реального инвойса в CryptoBot
+async function createCryptoInvoice(amountUsd, chatId) {
+  try {
+    const response = await axios.post(
+      'https://pay.crypt.bot/api/createInvoice',
+      {
+        asset: 'USDT',
+        amount: amountUsd.toString(),
+        description: 'Оплата аккаунта Roblox в NexusAcc',
+        payload: chatId.toString()
+      },
+      {
+        headers: {
+          'Crypto-Pay-API-Token': CRYPTO_PAY_TOKEN,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    if (response.data && response.data.ok) {
+      return {
+        payUrl: response.data.result.pay_url,
+        invoiceId: response.data.result.invoice_id
+      };
+    }
+  } catch (error) {
+    console.error('Ошибка создания инвойса:', error.response?.data || error.message);
+  }
+  return null;
+}
+
+// Функция проверки статуса счета через API CryptoBot
+async function checkInvoicePaid(invoiceId) {
+  try {
+    const response = await axios.post(
+      'https://pay.crypt.bot/api/getInvoices',
+      { invoice_ids: [invoiceId] },
+      {
+        headers: {
+          'Crypto-Pay-API-Token': CRYPTO_PAY_TOKEN,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    if (response.data && response.data.ok && response.data.result.items.length > 0) {
+      const invoice = response.data.result.items[0];
+      // Возвращает true, если статус 'paid' (оплачено)
+      return invoice.status === 'paid';
+    }
+  } catch (error) {
+    console.error('Ошибка проверки статуса счета:', error.response?.data || error.message);
+  }
+  return false;
+}
+
+bot.start(async (ctx) => {
+  const startPayload = ctx.text.split(' ')[1]; 
 
   if (startPayload && startPayload.startsWith('buy')) {
-    ctx.reply('⏳ Проверяем статус платежа...');
+    const parts = startPayload.split('_');
+    let usdAmount = 1.00;
+    
+    if (parts.length >= 3) {
+      usdAmount = parseFloat(`${parts[1]}.${parts[2]}`);
+    } else if (parts.length === 2 && !isNaN(parts[1])) {
+      usdAmount = parseFloat(parts[1]);
+    }
 
-    setTimeout(() => {
-      if (accountsDB.length > 0) {
-        // Забираем первый аккаунт из базы и удаляем его, чтобы не продать дважды
-        const givenAccount = accountsDB.shift(); 
-        
-        ctx.reply(
-          `✅ Оплата прошла успешно!\n\n` +
-          `📦 Вот данные вашего товара:\n` +
-          `<code>${givenAccount}</code>\n\n` +
-          `Спасибо за покупку в NexusAcc! Рекомендуем сменить пароль после авторизации.`,
-          { parse_mode: 'HTML' }
-        );
-      } else {
-        ctx.reply('❌ Ошибка: В данный момент этот товар закончился на складе. Напишите менеджеру: @delentius_dev_manager');
-      }
-    }, 1500);
+    ctx.reply('⏳ Создаем защищенный платежный счет...');
+
+    const invoiceData = await createCryptoInvoice(usdAmount, ctx.chat.id);
+
+    if (invoiceData) {
+      const { payUrl, invoiceId } = invoiceData;
+
+      ctx.reply(
+        `🛍️ **Счет на оплату создан!**\n\n` +
+        `Сумма: <code>$${usdAmount.toFixed(2)} USDT</code>\n\n` +
+        `Оплатите счет по кнопке ниже. После перевода нажмите **«Проверить оплату»**.\n` +
+        `*(ID счета: ${invoiceId}*)`,
+        {
+          parse_mode: 'HTML',
+          ...Markup.inlineKeyboard([
+            [Markup.button.url('💳 Оплатить счет', payUrl)],
+            [Markup.button.callback(`🔄 Проверить оплату_${invoiceId}`, `check_${invoiceId}`)]
+          ])
+        }
+      );
+    } else {
+      ctx.reply('❌ Ошибка связи с платежным шлюзом. Обратитесь к менеджеру: @delentius_dev_manager');
+    }
 
   } else {
     ctx.reply(
-      '👋 Привет! Добро пожаловать в официальный магазин **NexusAcc**.\n\n' +
-      'Для покупки аккаунтов перейдите на наш сайт и выберите нужную позицию в каталоге.',
+      '👋 Привет! Магазин **NexusAcc**.\n\n' +
+      'Для покупки используйте сайт.',
       { parse_mode: 'Markdown' }
     );
   }
 });
 
-// Обработка обычного текста на всякий случай
-bot.on('text', (ctx) => {
-  ctx.reply('Используйте сайт для выбора товаров, либо оформите покупку через каталог.');
+// СТРОГАЯ ПРОВЕРКА ОПЛАТЫ ЧЕРЕЗ API
+bot.action(/^check_(.+)$/, async (ctx) => {
+  const invoiceId = ctx.match[1];
+  await ctx.answerCbQuery('Запрос к CryptoBot...');
+
+  // Реально идем в API CryptoBot и проверяем статус
+  const isPaid = await checkInvoicePaid(invoiceId);
+
+  if (isPaid) {
+    // Если реально оплачено — отдаем аккаунт
+    if (accountsDB.length > 0) {
+      const givenAccount = accountsDB.shift();
+      await ctx.editMessageText(
+        `✅ **Оплата успешно получена!**\n\n` +
+        `📦 Ваши данные:\n` +
+        `<code>${givenAccount}</code>`,
+        { parse_mode: 'HTML' }
+      );
+    } else {
+      await ctx.editMessageText('❌ Оплата прошла, но товар закончился на складе! Напишите администратору.');
+    }
+  } else {
+    // ЕСЛИ НЕ ОПЛАЧЕНО — КАНАЛЬЯ, НИХРЕНА НЕ ВЫДАЕМ
+    await ctx.answerCbQuery('❌ Счет еще не оплачен! Переведите средства для получения товара.', { show_alert: true });
+  }
 });
 
 bot.launch();
-console.log('🤖 Бот автовыдачи успешно запущен и готов к работе!');
+console.log('🤖 Бот со строгой проверкой CryptoBot запущен!');
 
-// Корректная остановка
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
